@@ -11,4 +11,10 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
     List<Transaction> findByAccountId(UUID accountId);
 
     Optional<Transaction> findByAccountIdAndExternalId(UUID accountId, String externalId);
+
+    List<Transaction> findByAccount_User_Id(UUID userId);
+
+    Optional<Transaction> findByIdAndAccount_User_Id(UUID transactionId, UUID userId);
+
+
 }
