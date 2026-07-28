@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: budget-app-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: budget_app
+      POSTGRES_USER: budget_user
+      POSTGRES_PASSWORD: budget_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - budget_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U budget_user -d budget_app"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  budget_pg_data:
