@@ -1,0 +1,237 @@
+/* ============================================================
+   Design tokens — Budget
+   Base neutra fredda, accento smeraldo, cifre tabulari.
+   Tema chiaro/scuro automatico dal sistema.
+   ============================================================ */
+
+:root {
+  /* Palette — tema chiaro */
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --surface-2: #eef0f3;
+  --border: #e2e5ea;
+  --text: #191d23;
+  --text-muted: #6a7280;
+  --accent: #0e6e52;
+  --accent-strong: #0a5940;
+  --accent-soft: #e3f1eb;
+  --negative: #c24638;
+  --negative-soft: #f9e9e7;
+  --warn: #a97a12;
+  --warn-soft: #f6edd9;
+  --focus-ring: #0e6e5266;
+
+  /* Tipografia */
+  --font-display: 'Sora', system-ui, sans-serif;
+  --font-body: 'IBM Plex Sans', system-ui, sans-serif;
+
+  /* Geometria */
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --shadow: 0 1px 2px rgb(16 20 24 / 0.04), 0 4px 16px rgb(16 20 24 / 0.05);
+
+  /* Layout */
+  --sidebar-w: 232px;
+  --bottomnav-h: 60px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #101214;
+    --surface: #191d21;
+    --surface-2: #22272c;
+    --border: #2c3238;
+    --text: #eceff1;
+    --text-muted: #98a1ab;
+    --accent: #3dbd8f;
+    --accent-strong: #55d1a4;
+    --accent-soft: #17352b;
+    --negative: #e06a5c;
+    --negative-soft: #3a221f;
+    --warn: #d9a441;
+    --warn-soft: #3a3122;
+    --focus-ring: #3dbd8f66;
+    --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 4px 16px rgb(0 0 0 / 0.25);
+  }
+}
+
+/* ============ Reset e base ============ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { height: 100%; }
+
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  line-height: 1.2;
+  margin: 0;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+
+/* ============ Utility condivise ============ */
+
+/* Importi monetari: sempre cifre tabulari, in Sora */
+.amount {
+  font-family: var(--font-display);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+.amount--pos { color: var(--accent); }
+.amount--neg { color: var(--negative); }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+
+/* Bottoni */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.btn--primary {
+  background: var(--accent);
+  color: #fff;
+}
+.btn--primary:hover { background: var(--accent-strong); }
+.btn--primary:disabled { opacity: 0.55; cursor: not-allowed; }
+.btn--danger {
+  background: var(--negative);
+  color: #fff;
+}
+.btn--danger:hover { filter: brightness(0.92); }
+.btn--danger:disabled { opacity: 0.55; cursor: not-allowed; }
+.btn--ghost {
+  background: transparent;
+  color: var(--text-muted);
+}
+.btn--ghost:hover { background: var(--surface-2); color: var(--text); }
+
+/* Bottoni icona (azioni sulle card) */
+.icon-btn {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.icon-btn:hover { background: var(--surface-2); color: var(--text); }
+.icon-btn--danger:hover { background: var(--negative-soft); color: var(--negative); }
+.icon-btn svg { width: 18px; height: 18px; }
+
+/* Campi form */
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label { font-size: 13px; font-weight: 600; color: var(--text-muted); }
+.field input, .field select {
+  padding: 11px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+}
+.field input:focus, .field select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--focus-ring);
+}
+.field .error { font-size: 13px; color: var(--negative); }
+
+/* Messaggio di errore server */
+.alert {
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  background: var(--negative-soft);
+  color: var(--negative);
+  font-size: 14px;
+}
+
+/* ============ Dialog "sheet" ============
+   Modale centrata su desktop, bottom sheet su mobile.
+   Usata per form e conferme in tutte le sezioni. */
+
+dialog.sheet {
+  border: none;
+  padding: 0;
+  background: transparent;
+  max-width: none;
+}
+dialog.sheet::backdrop {
+  background: rgb(9 11 13 / 0.45);
+}
+.sheet__card {
+  width: min(440px, calc(100vw - 32px));
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: 24px;
+}
+.sheet__card h2 {
+  font-size: 20px;
+}
+.sheet__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+@media (max-width: 819px) {
+  dialog.sheet {
+    width: 100%;
+    margin: auto 0 0;
+  }
+  .sheet__card {
+    width: 100%;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    padding-bottom: calc(24px + env(safe-area-inset-bottom));
+  }
+}
