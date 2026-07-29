@@ -7,6 +7,10 @@ import { AuthResponse, AuthUser } from '../models';
 const TOKEN_KEY = 'budget.token';
 const USER_KEY = 'budget.user';
 
+interface MessageResponse {
+  messaggio: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private http = inject(HttpClient);
@@ -27,6 +31,24 @@ export class AuthService {
     return this.http
       .post<AuthResponse>('/api/auth/register', { nome, email, password })
       .pipe(tap(res => this.storeSession(res)));
+  }
+
+  forgotPassword(email: string): Observable<MessageResponse> {
+    return this.http.post<MessageResponse>('/api/auth/forgot-password', { email });
+  }
+
+  resetPassword(token: string, nuovaPassword: string): Observable<MessageResponse> {
+    return this.http.post<MessageResponse>('/api/auth/reset-password', {
+      token,
+      nuovaPassword,
+    });
+  }
+
+  changePassword(passwordAttuale: string, nuovaPassword: string): Observable<MessageResponse> {
+    return this.http.put<MessageResponse>('/api/auth/password', {
+      passwordAttuale,
+      nuovaPassword,
+    });
   }
 
   logout(): void {

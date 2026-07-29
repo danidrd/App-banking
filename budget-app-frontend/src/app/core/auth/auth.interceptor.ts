@@ -4,24 +4,27 @@ import { catchError, throwError } from 'rxjs';
 import { AuthService } from './auth.service';
 
 /**
- * Aggiunge Authorization: Bearer <token> a tutte le chiamate /api
- * (tranne quelle di autenticazione) e fa logout automatico quando
- * il backend risponde 401/403, cioè token mancante/scaduto/non valido.
- *
- * Nota: il backend attuale risponde 403 anche per alcune eccezioni
- * interne non gestite — se dovessi notare logout "a sorpresa" durante
- * lo sviluppo di nuove feature, il posto giusto dove guardare è il log
- * di Spring, non questo file.
+ * Endpoint di autenticazione PUBBLICI: niente Bearer, e un loro 401 non
+ * deve far scattare il logout (un login sbagliato non è una sessione
+ * scaduta). Nota che NON tutto /api/auth è pubblico: PUT /api/auth/password
+ * (cambio password da loggato) richiede il token come ogni altra chiamata.
  */
+const PUBLIC_AUTH_PATHS = [
+  '/api/auth/login',
+  '/api/auth/register',
+  '/api/auth/forgot-password',
+  '/api/auth/reset-password',
+];
+
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const auth = inject(AuthService);
 
   const isApiCall = req.url.startsWith('/api');
-  const isAuthCall = req.url.startsWith('/api/auth');
+  const isPublicAuthCall = PUBLIC_AUTH_PATHS.some(path => req.url.startsWith(path));
 
   let request = req;
   const token = auth.token;
-  if (isApiCall && !isAuthCall && token) {
+  if (isApiCall && !isPublicAuthCall && token) {
     request = req.clone({
       setHeaders: { Authorization: `Bearer ${token}` },
     });
@@ -29,7 +32,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(request).pipe(
     catchError((err: HttpErrorResponse) => {
-      if (isApiCall && !isAuthCall && (err.status === 401 || err.status === 403)) {
+      if (isApiCall && !isPublicAuthCall && (err.status === 401 || err.status === 403)) {
         auth.logout();
       }
       return throwError(() => err);

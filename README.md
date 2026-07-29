@@ -148,7 +148,7 @@ Prerequisiti: JDK 21, Docker Desktop (con backend WSL2 su Windows), Node.js LTS,
 - [x] Grafici sulla dashboard (spese per categoria, andamento mensile)
 - [ ] Integrazione Open Banking (sandbox GoCardless, sync schedulato)
 - [ ] Gestione budget e alert di superamento soglia
-- [ ] Wrap mobile con Ionic/Capacitor
+- [x] Wrap mobile con Ionic/Capacitor
 - [ ] Deploy
 
 ## Convenzioni di progetto

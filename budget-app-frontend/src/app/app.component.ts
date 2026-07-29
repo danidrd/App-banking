@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { DeepLinkService } from './core/deep-link.service';
 
 @Component({
   selector: 'app-root',
@@ -7,4 +8,9 @@ import { RouterOutlet } from '@angular/router';
   imports: [RouterOutlet],
   template: `<router-outlet />`,
 })
-export class AppComponent {}
+export class AppComponent {
+  constructor() {
+    // Attiva l'ascolto dei deep link (no-op nel browser, vedi il servizio).
+    inject(DeepLinkService).init();
+  }
+}

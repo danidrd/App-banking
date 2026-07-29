@@ -6,6 +6,10 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 .mvn/timestamp/
 
+# I wrapper di build vanno committati (permettono di buildare senza
+# installare Gradle/Maven): eccezione alla regola *.jar qui sopra.
+!**/gradle/wrapper/gradle-wrapper.jar
+
 # --- IDE ---
 .idea/
 *.iml
@@ -25,7 +29,15 @@ Thumbs.db
 application-local.yml
 .env
 
-# --- Node / Angular (per quando arriverà il frontend) ---
+# --- Node / Angular (budget-app-frontend) ---
 node_modules/
 dist/
 .angular/
+
+# --- Android (Capacitor) ---
+# La cartella android/ VA committata (ha un suo .gitignore interno per gli
+# artefatti di build). Questi invece sono copie generate da `npx cap sync`
+# a partire da dist/: rigenerabili sempre, committarle è solo rumore.
+android/app/src/main/assets/public/
+android/app/src/main/assets/capacitor.config.json
+android/app/src/main/assets/capacitor.plugins.json

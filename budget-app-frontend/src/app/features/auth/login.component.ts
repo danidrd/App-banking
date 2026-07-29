@@ -47,6 +47,7 @@ import { ApiError } from '../../core/models';
             @if (form.controls.password.touched && form.controls.password.invalid) {
               <span class="error">La password è obbligatoria</span>
             }
+            <a class="forgot-link" routerLink="/forgot-password">Password dimenticata?</a>
           </div>
 
           <button class="btn btn--primary" type="submit" [disabled]="loading()">
@@ -75,7 +76,7 @@ import { ApiError } from '../../core/models';
       display: none;
       background: var(--accent-strong);
       color: #fff;
-      padding: 48px;
+      padding: calc(48px + var(--inset-top)) 48px 48px;
       position: relative;
       overflow: hidden;
     }
@@ -112,7 +113,7 @@ import { ApiError } from '../../core/models';
     .auth__panel {
       display: grid;
       place-items: center;
-      padding: 32px 20px;
+      padding: calc(32px + var(--inset-top)) 20px calc(32px + var(--inset-bottom));
     }
     .auth__form {
       width: min(380px, 100%);
@@ -123,6 +124,13 @@ import { ApiError } from '../../core/models';
     h1 { font-size: 30px; }
     .auth__sub { margin: -8px 0 0; color: var(--text-muted); }
     .auth__switch { font-size: 14px; color: var(--text-muted); }
+    .forgot-link {
+      align-self: flex-end;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: -2px;
+    }
+    .forgot-link:hover { color: var(--accent); }
   `,
 })
 export class LoginComponent {

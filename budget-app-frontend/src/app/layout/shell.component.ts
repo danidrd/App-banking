@@ -60,13 +60,13 @@ interface NavItem {
     .nav {
       position: fixed;
       inset: auto 0 0 0;
-      height: var(--bottomnav-h);
+      height: calc(var(--bottomnav-h) + var(--inset-bottom));
       background: var(--surface);
       border-top: 1px solid var(--border);
       display: flex;
       align-items: stretch;
       z-index: 10;
-      padding-bottom: env(safe-area-inset-bottom);
+      padding-bottom: var(--inset-bottom);
     }
     .nav__brand, .nav__user { display: none; }
     .nav__list {
@@ -94,7 +94,7 @@ interface NavItem {
     .nav__link--active { color: var(--accent); }
 
     .shell__content {
-      padding: 20px 16px calc(var(--bottomnav-h) + 24px);
+      padding: calc(20px + var(--inset-top)) 16px calc(var(--bottomnav-h) + 24px + var(--inset-bottom));
       max-width: 1080px;
       margin: 0 auto;
     }
@@ -108,7 +108,7 @@ interface NavItem {
         flex-direction: column;
         border-top: none;
         border-right: 1px solid var(--border);
-        padding: 24px 14px;
+        padding: calc(24px + var(--inset-top)) 14px 24px;
       }
       .nav__brand {
         display: block;
@@ -179,7 +179,7 @@ interface NavItem {
 
       .shell__content {
         margin-left: var(--sidebar-w);
-        padding: 36px 40px 48px;
+        padding: calc(36px + var(--inset-top)) 40px 48px;
       }
     }
   `,

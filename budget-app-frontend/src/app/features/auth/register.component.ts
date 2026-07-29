@@ -57,7 +57,11 @@ import { ApiError } from '../../core/models';
   `,
   styles: `
     .auth { min-height: 100dvh; display: grid; }
-    .auth__panel { display: grid; place-items: center; padding: 32px 20px; }
+    .auth__panel {
+      display: grid;
+      place-items: center;
+      padding: calc(32px + var(--inset-top)) 20px calc(32px + var(--inset-bottom));
+    }
     .auth__form {
       width: min(380px, 100%);
       display: flex;

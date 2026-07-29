@@ -6,13 +6,16 @@ import localeIt from '@angular/common/locales/it';
 
 import { routes } from './app.routes';
 import { authInterceptor } from './core/auth/auth.interceptor';
+import { apiBaseInterceptor } from './core/api-base.interceptor';
 
 registerLocaleData(localeIt);
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    // L'ordine conta: authInterceptor lavora sull'URL relativo /api,
+    // apiBaseInterceptor lo rende assoluto solo dentro l'app nativa.
+    provideHttpClient(withInterceptors([authInterceptor, apiBaseInterceptor])),
     { provide: LOCALE_ID, useValue: 'it' },
   ],
 };

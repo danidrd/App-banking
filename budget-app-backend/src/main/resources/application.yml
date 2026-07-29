@@ -1,4 +1,17 @@
 spring:
+
+  mail:
+      host: smtp.gmail.com
+      port: 587
+      username: ${GMAIL_USERNAME}
+      password: ${GMAIL_APP_PASSWORD}
+      properties:
+        mail:
+          smtp:
+            auth: true
+            starttls:
+              enable: true
+
   application:
     name: budget-app-backend
 
@@ -34,3 +47,8 @@ app:
     jwt: 
       secret: ${JWT_SECRET:iJj0KwMI2GTM0Nx6nCqU3VfG/rPigXRV8tnUr+5kUiY=}
       expiration-minutes: 60 
+
+    frontend-base-url: http://192.168.1.6:4200
+
+    mail:
+      enabled: true

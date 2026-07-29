@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, viewChild } from '@angular/core';
 import { CurrencyPipe, formatDate } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
@@ -9,6 +9,8 @@ import { AuthService } from '../../core/auth/auth.service';
 import { Account, Category, Transaction } from '../../core/models';
 import { DonutChartComponent, DonutSlice } from '../../shared/charts/donut-chart.component';
 import { BarsChartComponent, MonthBar } from '../../shared/charts/bars-chart.component';
+import { ChangePasswordComponent } from '../auth/change-password.component';
+import { AccountMenuComponent } from '../auth/account-menu.component';
 
 type LoadState = 'loading' | 'ready' | 'error';
 
@@ -39,11 +41,25 @@ function toLocalIso(d: Date): string {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CurrencyPipe, RouterLink, DonutChartComponent, BarsChartComponent],
+  imports: [CurrencyPipe, RouterLink, DonutChartComponent, BarsChartComponent, ChangePasswordComponent, AccountMenuComponent],
   template: `
     <header class="page-head">
-      <h1>Ciao, {{ firstName }}</h1>
-      <p class="page-head__sub">Ecco come stanno i tuoi soldi oggi.</p>
+      <div>
+        <h1>Ciao, {{ firstName }}</h1>
+        <p class="page-head__sub">Ecco come stanno i tuoi soldi oggi.</p>
+      </div>
+      <button
+        class="icon-btn settings-btn"
+        type="button"
+        (click)="openAccountMenu()"
+        aria-label="Account"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.04 1.56V21a2 2 0 0 1-4 0v-.09A1.7 1.7 0 0 0 8.96 19.3a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.56-1.04H3a2 2 0 0 1 0-4h.09A1.7 1.7 0 0 0 4.6 8.96a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H9a1.7 1.7 0 0 0 1.04-1.56V3a2 2 0 0 1 4 0v.09a1.7 1.7 0 0 0 1.04 1.56 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V9a1.7 1.7 0 0 0 1.56 1.04H21a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1.04Z"/>
+        </svg>
+      </button>
     </header>
 
     @switch (state()) {
@@ -163,11 +179,22 @@ function toLocalIso(d: Date): string {
         </section>
       }
     }
+
+    <app-change-password />
+    <app-account-menu (changePassword)="openChangePassword()" />
   `,
   styles: `
-    .page-head { margin-bottom: 24px; }
+    .page-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
     .page-head h1 { font-size: 26px; }
     .page-head__sub { margin: 4px 0 0; color: var(--text-muted); }
+    .settings-btn { flex-shrink: 0; }
+    .settings-btn svg { width: 20px; height: 20px; }
 
     .hero {
       display: flex;
@@ -325,6 +352,9 @@ export class DashboardComponent {
   private transactionsApi = inject(TransactionsService);
   private auth = inject(AuthService);
 
+  private changePasswordCmp = viewChild.required(ChangePasswordComponent);
+  private accountMenuCmp = viewChild.required(AccountMenuComponent);
+
   readonly state = signal<LoadState>('loading');
   readonly accounts = signal<Account[]>([]);
   readonly categories = signal<Category[]>([]);
@@ -454,5 +484,13 @@ export class DashboardComponent {
     if (this.monthOffset() < 0) {
       this.monthOffset.update(offset => offset + 1);
     }
+  }
+
+  openAccountMenu(): void {
+    this.accountMenuCmp().open();
+  }
+
+  openChangePassword(): void {
+    this.changePasswordCmp().open();
   }
 }
