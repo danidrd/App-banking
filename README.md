@@ -144,8 +144,8 @@ Prerequisiti: JDK 21, Docker Desktop (con backend WSL2 su Windows), Node.js LTS,
 - [x] CRUD completo per `Account` (con controllo di ownership)
 - [x] CRUD completo per `Category`
 - [x] CRUD completo per `Transaction`
-- [ ] Frontend Angular di base (routing, login, shell dashboard)
-- [ ] Grafici sulla dashboard (spese per categoria, andamento mensile)
+- [x] Frontend Angular di base (routing, login, shell dashboard)
+- [x] Grafici sulla dashboard (spese per categoria, andamento mensile)
 - [ ] Integrazione Open Banking (sandbox GoCardless, sync schedulato)
 - [ ] Gestione budget e alert di superamento soglia
 - [ ] Wrap mobile con Ionic/Capacitor
