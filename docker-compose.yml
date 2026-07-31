@@ -37,6 +37,8 @@ services:
   frontend:
     build: ./budget-app-frontend
     restart: unless-stopped
+    volumes:
+      - ./apk-downloads:/usr/share/nginx/html/downloads
     networks:
       - budget-net
 

@@ -11,4 +11,4 @@
  * Nel browser (ng serve) questo valore non viene mai usato: le chiamate
  * restano relative a /api e passano dal proxy di sviluppo.
  */
-export const MOBILE_API_HOST = 'http://192.168.1.6:8080';
+export const MOBILE_API_HOST = 'https://api.budget-app.org';
