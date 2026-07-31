@@ -28,6 +28,7 @@ Thumbs.db
 # --- Segreti locali (se in futuro separi le credenziali dall'application.yml) ---
 application-local.yml
 .env
+secrets/
 
 # --- Node / Angular (budget-app-frontend) ---
 node_modules/
