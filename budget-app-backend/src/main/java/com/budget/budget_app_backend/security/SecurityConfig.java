@@ -18,6 +18,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -27,6 +28,16 @@ public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    /**
+     * In sviluppo va bene "*" (default, comodo per testare da IP/porte
+     * diverse). In produzione va impostata la variabile d'ambiente
+     * APP_CORS_ALLOWED_ORIGINS con il vero dominio, es.
+     * "https://budget-app.org" — mai lasciare "*" quando l'app è esposta
+     * pubblicamente. Più origini separate da virgola sono supportate.
+     */
+    @org.springframework.beans.factory.annotation.Value("${app.cors.allowed-origins:*}")
+    private String allowedOrigins;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -50,15 +61,15 @@ public class SecurityConfig {
      * un'origine diversa dal backend e senza questi header vedrebbe le
      * risposte bloccate dalla WebView.
      *
-     * L'asterisco sulle origini va bene SOLO per lo sviluppo: possiamo
-     * permettercelo perché il token viaggia nell'header Authorization e
-     * allowCredentials è false (niente cookie coinvolti). Il giorno del
-     * deploy reale, qui andranno elencate le origini esatte dell'app.
+     * L'asterisco è il default per lo sviluppo: possiamo permettercelo
+     * perché il token viaggia nell'header Authorization e allowCredentials
+     * è false (niente cookie coinvolti). In produzione, APP_CORS_ALLOWED_ORIGINS
+     * restringe alle origini vere.
      */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("*"));
+        configuration.setAllowedOriginPatterns(Arrays.asList(allowedOrigins.split(",")));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         configuration.setAllowCredentials(false);
@@ -86,7 +97,6 @@ public class SecurityConfig {
                         // La banca reindirizza qui dopo il login: nessun token
                         // JWT disponibile a quel punto (non siamo dentro l'app).
                         .requestMatchers("/api/integration/bridge").permitAll()
-                        .requestMatchers("/actuator/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
