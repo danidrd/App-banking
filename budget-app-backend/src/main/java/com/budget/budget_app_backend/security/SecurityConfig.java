@@ -83,6 +83,10 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
+                        // La banca reindirizza qui dopo il login: nessun token
+                        // JWT disponibile a quel punto (non siamo dentro l'app).
+                        .requestMatchers("/api/integration/bridge").permitAll()
+                        .requestMatchers("/actuator/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())

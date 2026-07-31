@@ -14,6 +14,7 @@ public record TransactionResponse(
     String descrizione,
     LocalDate data,
     Boolean ricorrente,
+    Boolean trasferimentoInterno,
     Instant createdAt
 ) {
 }

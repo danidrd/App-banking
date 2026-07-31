@@ -331,6 +331,7 @@ export class BudgetsComponent {
               t =>
                 t.categoryId === riga.categoryId &&
                 t.importo < 0 &&
+                !t.trasferimentoInterno &&
                 t.data >= budget.dataInizio &&
                 t.data <= budget.dataFine
             )

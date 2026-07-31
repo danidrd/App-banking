@@ -68,7 +68,7 @@ public class AccountService {
     }
 
     private AccountResponse toResponse(Account account) {
-        return new AccountResponse(account.getId(), account.getNome(), account.getTipo(), account.getSaldo(), account.getValuta(), account.getBankConnectionId(), account.getCreatedAt());
+        return new AccountResponse(account.getId(), account.getNome(), account.getTipo(), account.getSaldo(), account.getValuta(), account.getBankConnectionId(), account.getLastSyncedAt(), account.getCreatedAt());
     }
 
 

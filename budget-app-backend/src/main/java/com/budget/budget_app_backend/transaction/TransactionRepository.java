@@ -16,5 +16,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
 
     Optional<Transaction> findByIdAndAccount_User_Id(UUID transactionId, UUID userId);
 
+    /** Candidate per il rilevamento dei trasferimenti interni: non ancora marcate come tali. */
+    List<Transaction> findByAccount_User_IdAndTrasferimentoInternoFalse(UUID userId);
 
 }

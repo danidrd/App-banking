@@ -21,6 +21,7 @@ export interface Account {
   saldo: number;
   valuta: string;
   bankConnectionId: string | null;
+  lastSyncedAt: string | null;
   createdAt: string;
 }
 
@@ -61,6 +62,7 @@ export interface Transaction {
   descrizione: string | null;
   data: string;
   ricorrente: boolean;
+  trasferimentoInterno: boolean;
   createdAt: string;
 }
 

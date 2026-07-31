@@ -11,4 +11,9 @@ public interface AccountRepository extends JpaRepository<Account, UUID> {
     List<Account> findByUserId(UUID userId);
 
     Optional<Account> findByUserIdAndId(UUID userId, UUID accountId);
+
+    Optional<Account> findByUserIdAndExternalUid(UUID userId, String externalUid);
+
+    /** Tutti i conti collegati via Open Banking, di qualunque utente — usato dal job di sincronizzazione automatica. */
+    List<Account> findByExternalUidIsNotNull();
 }

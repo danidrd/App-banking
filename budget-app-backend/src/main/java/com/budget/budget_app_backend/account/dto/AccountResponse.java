@@ -4,8 +4,6 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
-import jakarta.validation.constraints.Size;
-
 public record AccountResponse(
     UUID id,
     String nome,
@@ -13,16 +11,18 @@ public record AccountResponse(
     BigDecimal saldo,
     String valuta,
     UUID bankConnectionId,
+    Instant lastSyncedAt,
     Instant createdAt
 ) {
 
-    public AccountResponse(UUID id, String nome, String tipo, BigDecimal saldo, String valuta, UUID bankConnectionId, Instant createdAt) {
+    public AccountResponse(UUID id, String nome, String tipo, BigDecimal saldo, String valuta, UUID bankConnectionId, Instant lastSyncedAt, Instant createdAt) {
         this.id = id;
         this.nome = nome;
         this.tipo = tipo;
         this.saldo = saldo;
         this.valuta = valuta;
         this.bankConnectionId = bankConnectionId;
+        this.lastSyncedAt = lastSyncedAt;
         this.createdAt = createdAt;
     }
 
@@ -48,6 +48,10 @@ public record AccountResponse(
 
     public UUID getBankConnectionId() {
         return bankConnectionId;
+    }
+
+    public Instant getLastSyncedAt() {
+        return lastSyncedAt;
     }
 
     public Instant getCreatedAt() {

@@ -58,6 +58,16 @@ public class Transaction {
     @Column(name = "external_id")
     private String externalId;
 
+    /**
+     * true se questa transazione è in realtà uno spostamento tra due conti
+     * dello stesso utente (entrambi collegati via Open Banking), rilevato
+     * automaticamente da BankSyncService.matchInternalTransfers — non è
+     * una vera spesa/entrata esterna, va esclusa dai calcoli di dashboard
+     * e budget pur restando visibile nell'elenco transazioni.
+     */
+    @Column(name = "trasferimento_interno", nullable = false)
+    private boolean trasferimentoInterno;
+
     @Column(name = "created_at", insertable = false, updatable = false)
     private Instant createdAt;
 }

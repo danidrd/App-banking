@@ -388,7 +388,7 @@ export class DashboardComponent {
 
     const sums = new Map<string | null, number>();
     for (const t of this.transactions()) {
-      if (t.importo >= 0 || t.data < start || t.data > end) continue;
+      if (t.importo >= 0 || t.data < start || t.data > end || t.trasferimentoInterno) continue;
       sums.set(t.categoryId, (sums.get(t.categoryId) ?? 0) + Math.abs(t.importo));
     }
 
@@ -438,7 +438,7 @@ export class DashboardComponent {
       let entrate = 0;
       let uscite = 0;
       for (const t of this.transactions()) {
-        if (t.data < start || t.data > end) continue;
+        if (t.data < start || t.data > end || t.trasferimentoInterno) continue;
         if (t.importo > 0) entrate += t.importo;
         else uscite += Math.abs(t.importo);
       }

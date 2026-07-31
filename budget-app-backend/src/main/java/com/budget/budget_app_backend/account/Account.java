@@ -55,6 +55,18 @@ public class Account {
     @Column(nullable = false)
     private String valuta;
 
+    /** Identificativo stabile del conto lato Enable Banking (uid): presente solo se collegato via Open Banking. */
+    @Column(name = "external_uid")
+    private String externalUid;
+
+    /** IBAN reale del conto, quando disponibile (assente per sotto-conti/Spaces senza IBAN proprio, es. i vault N26). */
+    @Column(name = "external_iban")
+    private String externalIban;
+
+    /** Quando questo conto è stato sincronizzato l'ultima volta (manualmente o dal job automatico). */
+    @Column(name = "last_synced_at")
+    private Instant lastSyncedAt;
+
     @Column(name = "created_at", insertable = false, updatable = false)
     private Instant createdAt;
 }

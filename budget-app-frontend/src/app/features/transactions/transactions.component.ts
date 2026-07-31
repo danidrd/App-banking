@@ -135,6 +135,11 @@ interface DayGroup {
                               <path d="M21 12a9 9 0 1 1-2.64-6.36M21 3v6h-6"/>
                             </svg>
                           }
+                          @if (transaction.trasferimentoInterno) {
+                            <span class="tx__transfer-tag" title="Trasferimento tra i tuoi conti: escluso dai calcoli di spesa">
+                              trasferimento
+                            </span>
+                          }
                         </span>
                         <span class="tx__meta">
                           @if (transaction.descrizione) {
@@ -293,6 +298,17 @@ interface DayGroup {
       text-overflow: ellipsis;
     }
     .tx__loop { width: 14px; height: 14px; color: var(--text-muted); flex-shrink: 0; }
+    .tx__transfer-tag {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      color: var(--text-muted);
+      background: var(--surface-2);
+      border-radius: 999px;
+      padding: 2px 8px;
+      flex-shrink: 0;
+    }
     .tx__meta {
       font-size: 13px;
       color: var(--text-muted);

@@ -47,8 +47,17 @@ app:
     jwt: 
       secret: ${JWT_SECRET:iJj0KwMI2GTM0Nx6nCqU3VfG/rPigXRV8tnUr+5kUiY=}
       expiration-minutes: 60 
-
     frontend-base-url: http://192.168.1.6:4200
-
     mail:
       enabled: true
+    enablebanking:
+      application-id: 1ac89b04-700b-43ab-be9b-b7e0b3685aea
+      private-key-path: C:\Users\danie\Desktop\secret\1ac89b04-700b-43ab-be9b-b7e0b3685aea.pem
+      base-url: https://api.enablebanking.com
+      bridge-url: https://dimmer-deprive-stagnate.ngrok-free.dev/api/integration/bridge
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health

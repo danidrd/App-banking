@@ -95,6 +95,7 @@ public class TransactionService {
                 transaction.getDescrizione(),
                 transaction.getData(),
                 transaction.isRicorrente(),
+                transaction.isTrasferimentoInterno(),
                 transaction.getCreatedAt()
         );
     }

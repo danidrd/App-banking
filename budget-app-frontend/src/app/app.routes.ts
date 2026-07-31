@@ -53,6 +53,21 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/budgets/budgets.component').then(m => m.BudgetsComponent),
       },
+      {
+        path: 'collega-banca',
+        loadComponent: () =>
+          import('./features/integration/connect-bank.component').then(m => m.ConnectBankComponent),
+      },
+      {
+        path: 'banche-collegate',
+        loadComponent: () =>
+          import('./features/integration/connected-banks.component').then(m => m.ConnectedBanksComponent),
+      },
+      {
+        path: 'bank-callback',
+        loadComponent: () =>
+          import('./features/integration/bank-callback.component').then(m => m.BankCallbackComponent),
+      },
     ],
   },
   { path: '**', redirectTo: '' },
