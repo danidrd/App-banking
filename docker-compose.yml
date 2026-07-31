@@ -26,7 +26,7 @@ services:
       APP_ENABLEBANKING_PRIVATE_KEY_PATH: /run/secrets/enablebanking_key.pem
       APP_ENABLEBANKING_BASE_URL: https://api.enablebanking.com
       APP_ENABLEBANKING_BRIDGE_URL: https://api.budget-app.org/api/integration/bridge
-      APP_CORS_ALLOWED_ORIGINS: https://budget-app.org
+      APP_CORS_ALLOWED_ORIGINS: https://budget-app.org,http://localhost
       GMAIL_USERNAME: ${GMAIL_USERNAME}
       GMAIL_APP_PASSWORD: ${GMAIL_APP_PASSWORD}
     volumes:
