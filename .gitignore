@@ -29,6 +29,7 @@ Thumbs.db
 application-local.yml
 .env
 secrets/
+apk-downloads/
 
 # --- Node / Angular (budget-app-frontend) ---
 node_modules/
