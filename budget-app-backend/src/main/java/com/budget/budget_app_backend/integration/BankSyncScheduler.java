@@ -29,7 +29,7 @@ public class BankSyncScheduler {
         this.bankSyncService = bankSyncService;
     }
 
-    @Scheduled(cron = "0 0 11,18 * * *")
+    @Scheduled(cron = "0 0 6,18 * * *")
     public void syncAllConnectedAccounts() {
         List<Account> connected = accountRepository.findByExternalUidIsNotNull();
         log.info("Sincronizzazione automatica avviata per {} conti collegati", connected.size());
