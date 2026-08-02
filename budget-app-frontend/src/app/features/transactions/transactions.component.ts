@@ -81,6 +81,17 @@ interface DayGroup {
             </select>
             <select
               class="filters__select"
+              [value]="yearFilter()"
+              (change)="onYearFilter($event)"
+              aria-label="Filtra per anno"
+            >
+              <option value="all">Tutti gli anni</option>
+              @for (year of availableYears(); track year) {
+                <option [value]="year">{{ year }}</option>
+              }
+            </select>
+            <select
+              class="filters__select"
               [value]="monthFilter()"
               (change)="onMonthFilter($event)"
               aria-label="Filtra per mese"
@@ -400,6 +411,7 @@ export class TransactionsComponent {
 
   readonly accountFilter = signal<string>('all');
   readonly tipoFilter = signal<TipoFilter>('all');
+  readonly yearFilter = signal<string>('all');
   readonly monthFilter = signal<string>('all');
   readonly categoryFilter = signal<string>('all');
 
@@ -410,11 +422,27 @@ export class TransactionsComponent {
     () => new Map(this.categories().map(c => [c.id, c]))
   );
 
-  /** Elenco dei mesi (formato 'YYYY-MM') che compaiono davvero nei dati, più recente per primo. */
+  /** Anni (formato 'YYYY') che compaiono davvero nei dati, più recente per primo. */
+  readonly availableYears = computed(() => {
+    const years = new Set<string>();
+    for (const t of this.transactions()) {
+      years.add(t.data.slice(0, 4));
+    }
+    return [...years].sort((a, b) => b.localeCompare(a));
+  });
+
+  /**
+   * Mesi (formato 'YYYY-MM') disponibili — se è scelto un anno specifico,
+   * la lista si restringe ai soli mesi di quell'anno (evita l'elenco lungo
+   * e ripetitivo tipo "Agosto 2026, Agosto 2025, Luglio 2026...").
+   */
   readonly availableMonths = computed(() => {
+    const year = this.yearFilter();
     const months = new Set<string>();
     for (const t of this.transactions()) {
-      months.add(t.data.slice(0, 7));
+      const ym = t.data.slice(0, 7);
+      if (year !== 'all' && !ym.startsWith(year)) continue;
+      months.add(ym);
     }
     return [...months].sort((a, b) => b.localeCompare(a));
   });
@@ -423,6 +451,7 @@ export class TransactionsComponent {
     () =>
       this.accountFilter() !== 'all' ||
       this.tipoFilter() !== 'all' ||
+      this.yearFilter() !== 'all' ||
       this.monthFilter() !== 'all' ||
       this.categoryFilter() !== 'all'
   );
@@ -430,12 +459,14 @@ export class TransactionsComponent {
   private readonly filtered = computed(() => {
     const account = this.accountFilter();
     const tipo = this.tipoFilter();
+    const year = this.yearFilter();
     const month = this.monthFilter();
     const category = this.categoryFilter();
     return this.transactions().filter(t => {
       if (account !== 'all' && t.accountId !== account) return false;
       if (tipo === 'USCITA' && t.importo >= 0) return false;
       if (tipo === 'ENTRATA' && t.importo < 0) return false;
+      if (year !== 'all' && t.data.slice(0, 4) !== year) return false;
       if (month !== 'all' && t.data.slice(0, 7) !== month) return false;
       if (category === 'none' && t.categoryId !== null) return false;
       if (category !== 'all' && category !== 'none' && t.categoryId !== category) return false;
@@ -512,6 +543,17 @@ export class TransactionsComponent {
     this.accountFilter.set((event.target as HTMLSelectElement).value);
   }
 
+  onYearFilter(event: Event): void {
+    const year = (event.target as HTMLSelectElement).value;
+    this.yearFilter.set(year);
+    // Se il mese già scelto non appartiene più all'anno selezionato,
+    // azzeralo per evitare una combinazione senza risultati e confusa.
+    const currentMonth = this.monthFilter();
+    if (currentMonth !== 'all' && year !== 'all' && !currentMonth.startsWith(year)) {
+      this.monthFilter.set('all');
+    }
+  }
+
   onMonthFilter(event: Event): void {
     this.monthFilter.set((event.target as HTMLSelectElement).value);
   }
@@ -520,17 +562,19 @@ export class TransactionsComponent {
     this.categoryFilter.set((event.target as HTMLSelectElement).value);
   }
 
-  /** 'YYYY-MM' → "Luglio 2026". */
+  /** 'YYYY-MM' → "Luglio 2026", oppure solo "Luglio" se un anno è già selezionato altrove. */
   monthLabel(yearMonth: string): string {
     const [year, month] = yearMonth.split('-').map(Number);
     const date = new Date(year, month - 1, 1);
-    const label = formatDate(date, 'MMMM y', 'it');
+    const pattern = this.yearFilter() === 'all' ? 'MMMM y' : 'MMMM';
+    const label = formatDate(date, pattern, 'it');
     return label.charAt(0).toUpperCase() + label.slice(1);
   }
 
   resetFilters(): void {
     this.accountFilter.set('all');
     this.tipoFilter.set('all');
+    this.yearFilter.set('all');
     this.monthFilter.set('all');
     this.categoryFilter.set('all');
   }
