@@ -388,7 +388,13 @@ export class DashboardComponent {
 
     const sums = new Map<string | null, number>();
     for (const t of this.transactions()) {
-      if (t.importo >= 0 || t.data < start || t.data > end || t.trasferimentoInterno) continue;
+      // Un trasferimento interno riconosciuto in automatico resta escluso
+      // di default — ma se l'utente gli assegna comunque una categoria a
+      // mano, quella scelta esplicita vince: la transazione torna a
+      // contare, esattamente come per qualunque altra spesa categorizzata.
+      const overriddenByCategory = t.trasferimentoInterno && t.categoryId != null;
+      if (t.importo >= 0 || t.data < start || t.data > end) continue;
+      if (t.trasferimentoInterno && !overriddenByCategory) continue;
       sums.set(t.categoryId, (sums.get(t.categoryId) ?? 0) + Math.abs(t.importo));
     }
 
