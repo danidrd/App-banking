@@ -85,6 +85,11 @@ function toLocalIso(d: Date): string {
           <span class="hero__meta">
             {{ accounts().length }} {{ accounts().length === 1 ? 'conto' : 'conti' }}
           </span>
+          @if (salvadanaioBalance() > 0) {
+            <span class="hero__savings">
+              💰 Nel salvadanaio: {{ salvadanaioBalance() | currency : 'EUR' }}
+            </span>
+          }
         </section>
 
         <div class="charts">
@@ -215,6 +220,12 @@ function toLocalIso(d: Date): string {
       font-weight: 700;
     }
     .hero__meta { font-size: 14px; color: var(--text-muted); }
+    .hero__savings {
+      font-size: 13.5px;
+      color: var(--accent);
+      font-weight: 600;
+      margin-top: 2px;
+    }
 
     .charts {
       display: grid;
@@ -380,6 +391,24 @@ export class DashboardComponent {
       end: toLocalIso(last),
       label: formatDate(first, 'MMMM y', 'it'),
     };
+  });
+
+  /**
+   * Quanto c'è attualmente "parcheggiato" nel salvadanaio (isybank) — non
+   * un flusso mensile, ma un saldo cumulativo su tutta la storia:
+   * somma di ogni deposito (uscita dal conto principale) meno ogni
+   * prelievo (entrata), riconosciuti dalla stessa descrizione che isybank
+   * usa sempre per questi movimenti. Non serve sapere quale prelievo
+   * corrisponde a quale deposito — è pura aritmetica cumulativa.
+   */
+  readonly salvadanaioBalance = computed(() => {
+    let sum = 0;
+    for (const t of this.transactions()) {
+      if (t.descrizione?.includes('MOVIMENTO SALVADANAIO')) {
+        sum += t.importo;
+      }
+    }
+    return -sum;
   });
 
   readonly donut = computed(() => {

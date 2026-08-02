@@ -1,17 +1,5 @@
 package com.budget.budget_app_backend.integration;
 
-import com.budget.budget_app_backend.account.Account;
-import com.budget.budget_app_backend.account.AccountRepository;
-import com.budget.budget_app_backend.common.ResourceNotFoundException;
-import com.budget.budget_app_backend.integration.dto.BalancesResponse;
-import com.budget.budget_app_backend.transaction.dto.EnableTransactionDto;
-import com.budget.budget_app_backend.integration.dto.TransactionsPageResponse;
-import com.budget.budget_app_backend.transaction.Transaction;
-import com.budget.budget_app_backend.transaction.TransactionRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.HttpClientErrorException;
-
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
@@ -19,6 +7,19 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
+
+import com.budget.budget_app_backend.account.Account;
+import com.budget.budget_app_backend.account.AccountRepository;
+import com.budget.budget_app_backend.common.ResourceNotFoundException;
+import com.budget.budget_app_backend.integration.dto.BalancesResponse;
+import com.budget.budget_app_backend.integration.dto.TransactionsPageResponse;
+import com.budget.budget_app_backend.transaction.Transaction;
+import com.budget.budget_app_backend.transaction.TransactionRepository;
+import com.budget.budget_app_backend.transaction.dto.EnableTransactionDto;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 
 /**
  * Sincronizzazione manuale (per ora) delle transazioni di un conto
