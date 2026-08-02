@@ -1,5 +1,5 @@
 import { Component, ElementRef, computed, inject, signal, viewChild } from '@angular/core';
-import { CurrencyPipe, DatePipe } from '@angular/common';
+import { CurrencyPipe, DatePipe, formatDate } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { AccountsService } from '../../core/api/accounts.service';
@@ -79,6 +79,29 @@ interface DayGroup {
                 <option [value]="account.id">{{ account.nome }}</option>
               }
             </select>
+            <select
+              class="filters__select"
+              [value]="monthFilter()"
+              (change)="onMonthFilter($event)"
+              aria-label="Filtra per mese"
+            >
+              <option value="all">Tutti i mesi</option>
+              @for (month of availableMonths(); track month) {
+                <option [value]="month">{{ monthLabel(month) }}</option>
+              }
+            </select>
+            <select
+              class="filters__select"
+              [value]="categoryFilter()"
+              (change)="onCategoryFilter($event)"
+              aria-label="Filtra per categoria"
+            >
+              <option value="all">Tutte le categorie</option>
+              <option value="none">Senza categoria</option>
+              @for (category of categories(); track category.id) {
+                <option [value]="category.id">{{ category.nome }}</option>
+              }
+            </select>
 
             <div class="chips" role="group" aria-label="Filtra per tipo">
               <button
@@ -100,6 +123,12 @@ interface DayGroup {
                 (click)="tipoFilter.set('ENTRATA')"
               >Entrate</button>
             </div>
+
+            @if (hasActiveFilters()) {
+              <button type="button" class="filters__reset" (click)="resetFilters()">
+                Azzera filtri
+              </button>
+            }
           </div>
 
           @if (groups().length === 0) {
@@ -245,6 +274,17 @@ interface DayGroup {
       font-size: 14px;
     }
     .chips { display: flex; gap: 6px; }
+    .filters__reset {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-family: var(--font-body);
+      font-size: 13px;
+      text-decoration: underline;
+      cursor: pointer;
+      padding: 8px 4px;
+    }
+    .filters__reset:hover { color: var(--text); }
     .chip {
       padding: 8px 14px;
       border: 1px solid var(--border);
@@ -360,6 +400,8 @@ export class TransactionsComponent {
 
   readonly accountFilter = signal<string>('all');
   readonly tipoFilter = signal<TipoFilter>('all');
+  readonly monthFilter = signal<string>('all');
+  readonly categoryFilter = signal<string>('all');
 
   private readonly accountsById = computed(
     () => new Map(this.accounts().map(a => [a.id, a]))
@@ -368,13 +410,35 @@ export class TransactionsComponent {
     () => new Map(this.categories().map(c => [c.id, c]))
   );
 
+  /** Elenco dei mesi (formato 'YYYY-MM') che compaiono davvero nei dati, più recente per primo. */
+  readonly availableMonths = computed(() => {
+    const months = new Set<string>();
+    for (const t of this.transactions()) {
+      months.add(t.data.slice(0, 7));
+    }
+    return [...months].sort((a, b) => b.localeCompare(a));
+  });
+
+  readonly hasActiveFilters = computed(
+    () =>
+      this.accountFilter() !== 'all' ||
+      this.tipoFilter() !== 'all' ||
+      this.monthFilter() !== 'all' ||
+      this.categoryFilter() !== 'all'
+  );
+
   private readonly filtered = computed(() => {
     const account = this.accountFilter();
     const tipo = this.tipoFilter();
+    const month = this.monthFilter();
+    const category = this.categoryFilter();
     return this.transactions().filter(t => {
       if (account !== 'all' && t.accountId !== account) return false;
       if (tipo === 'USCITA' && t.importo >= 0) return false;
       if (tipo === 'ENTRATA' && t.importo < 0) return false;
+      if (month !== 'all' && t.data.slice(0, 7) !== month) return false;
+      if (category === 'none' && t.categoryId !== null) return false;
+      if (category !== 'all' && category !== 'none' && t.categoryId !== category) return false;
       return true;
     });
   });
@@ -448,9 +512,27 @@ export class TransactionsComponent {
     this.accountFilter.set((event.target as HTMLSelectElement).value);
   }
 
+  onMonthFilter(event: Event): void {
+    this.monthFilter.set((event.target as HTMLSelectElement).value);
+  }
+
+  onCategoryFilter(event: Event): void {
+    this.categoryFilter.set((event.target as HTMLSelectElement).value);
+  }
+
+  /** 'YYYY-MM' → "Luglio 2026". */
+  monthLabel(yearMonth: string): string {
+    const [year, month] = yearMonth.split('-').map(Number);
+    const date = new Date(year, month - 1, 1);
+    const label = formatDate(date, 'MMMM y', 'it');
+    return label.charAt(0).toUpperCase() + label.slice(1);
+  }
+
   resetFilters(): void {
     this.accountFilter.set('all');
     this.tipoFilter.set('all');
+    this.monthFilter.set('all');
+    this.categoryFilter.set('all');
   }
 
   openNew(): void {
