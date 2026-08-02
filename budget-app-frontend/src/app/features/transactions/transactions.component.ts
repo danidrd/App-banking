@@ -1,5 +1,5 @@
 import { Component, ElementRef, computed, inject, signal, viewChild } from '@angular/core';
-import { CurrencyPipe, DatePipe, formatDate } from '@angular/common';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { AccountsService } from '../../core/api/accounts.service';
@@ -97,8 +97,8 @@ interface DayGroup {
               aria-label="Filtra per mese"
             >
               <option value="all">Tutti i mesi</option>
-              @for (month of availableMonths(); track month) {
-                <option [value]="month">{{ monthLabel(month) }}</option>
+              @for (month of availableMonths(); track month.value) {
+                <option [value]="month.value">{{ month.label }}</option>
               }
             </select>
             <select
@@ -400,6 +400,11 @@ interface DayGroup {
   `,
 })
 export class TransactionsComponent {
+  private static readonly MONTH_NAMES = [
+    'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno',
+    'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre',
+  ];
+
   private transactionsApi = inject(TransactionsService);
   private accountsApi = inject(AccountsService);
   private categoriesApi = inject(CategoriesService);
@@ -422,30 +427,23 @@ export class TransactionsComponent {
     () => new Map(this.categories().map(c => [c.id, c]))
   );
 
-  /** Anni (formato 'YYYY') che compaiono davvero nei dati, più recente per primo. */
+  /** Prossimi anni utili come filtro — a partire da quello corrente, non dai dati esistenti (che potrebbero avere solo residui sparsi di test). Si aggiorna da solo ogni anno. */
   readonly availableYears = computed(() => {
-    const years = new Set<string>();
-    for (const t of this.transactions()) {
-      years.add(t.data.slice(0, 4));
+    const currentYear = new Date().getFullYear();
+    const years: string[] = [];
+    for (let y = currentYear; y <= currentYear + 5; y++) {
+      years.push(String(y));
     }
-    return [...years].sort((a, b) => b.localeCompare(a));
+    return years;
   });
 
-  /**
-   * Mesi (formato 'YYYY-MM') disponibili — se è scelto un anno specifico,
-   * la lista si restringe ai soli mesi di quell'anno (evita l'elenco lungo
-   * e ripetitivo tipo "Agosto 2026, Agosto 2025, Luglio 2026...").
-   */
-  readonly availableMonths = computed(() => {
-    const year = this.yearFilter();
-    const months = new Set<string>();
-    for (const t of this.transactions()) {
-      const ym = t.data.slice(0, 7);
-      if (year !== 'all' && !ym.startsWith(year)) continue;
-      months.add(ym);
-    }
-    return [...months].sort((a, b) => b.localeCompare(a));
-  });
+  /** I 12 mesi, sempre gli stessi, indipendenti dall'anno — si combinano con il filtro anno, se scelto. */
+  readonly availableMonths = computed(() =>
+    TransactionsComponent.MONTH_NAMES.map((label, index) => ({
+      value: String(index + 1).padStart(2, '0'),
+      label,
+    }))
+  );
 
   readonly hasActiveFilters = computed(
     () =>
@@ -467,7 +465,7 @@ export class TransactionsComponent {
       if (tipo === 'USCITA' && t.importo >= 0) return false;
       if (tipo === 'ENTRATA' && t.importo < 0) return false;
       if (year !== 'all' && t.data.slice(0, 4) !== year) return false;
-      if (month !== 'all' && t.data.slice(0, 7) !== month) return false;
+      if (month !== 'all' && t.data.slice(5, 7) !== month) return false;
       if (category === 'none' && t.categoryId !== null) return false;
       if (category !== 'all' && category !== 'none' && t.categoryId !== category) return false;
       return true;
@@ -544,14 +542,7 @@ export class TransactionsComponent {
   }
 
   onYearFilter(event: Event): void {
-    const year = (event.target as HTMLSelectElement).value;
-    this.yearFilter.set(year);
-    // Se il mese già scelto non appartiene più all'anno selezionato,
-    // azzeralo per evitare una combinazione senza risultati e confusa.
-    const currentMonth = this.monthFilter();
-    if (currentMonth !== 'all' && year !== 'all' && !currentMonth.startsWith(year)) {
-      this.monthFilter.set('all');
-    }
+    this.yearFilter.set((event.target as HTMLSelectElement).value);
   }
 
   onMonthFilter(event: Event): void {
@@ -560,15 +551,6 @@ export class TransactionsComponent {
 
   onCategoryFilter(event: Event): void {
     this.categoryFilter.set((event.target as HTMLSelectElement).value);
-  }
-
-  /** 'YYYY-MM' → "Luglio 2026", oppure solo "Luglio" se un anno è già selezionato altrove. */
-  monthLabel(yearMonth: string): string {
-    const [year, month] = yearMonth.split('-').map(Number);
-    const date = new Date(year, month - 1, 1);
-    const pattern = this.yearFilter() === 'all' ? 'MMMM y' : 'MMMM';
-    const label = formatDate(date, pattern, 'it');
-    return label.charAt(0).toUpperCase() + label.slice(1);
   }
 
   resetFilters(): void {
